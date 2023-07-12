@@ -33,6 +33,28 @@ Before using this pipeline, ensure that you have the following:
 These assumptions will serve as a foundation for the tutorial, ensuring that the subsequent steps and explanations align with the specified environment.
 
 ``` It is important to note that only the Dev ADF will be integrated with Git, while the remaining ADF instances such as Prod and Test will not be GIT integrated.```
+
+##Adding the package.json
+=======================
+
+Before you start creating the pipeline, you will have to create a `package.json` file. This file will contain the details to obtain the ADFUtilities package. The content of the file is given below:
+
+In the repository, we will create a `build` folder (Folder name can be anything).
+Inside the folder, create a `package.json` file.
+Paste the following code into the `package.json` file:
+
+```json
+{
+    "scripts":{
+        "build":"node node_modules/@microsoft/azure-data-factory-utilities/lib/index",
+        "build-preview":"node node_modules/@microsoft/azure-data-factory-utilities/lib/index --preview"
+    },
+    "dependencies":{
+        "@microsoft/azure-data-factory-utilities":"^1.0.0"
+    }
+}
+```
+
 ## Pipeline Overview
 
 The pipeline consists of the following stages:
