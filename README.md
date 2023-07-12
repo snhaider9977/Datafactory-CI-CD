@@ -68,6 +68,52 @@ This stage builds the ADF ARM templates and exports them as artifacts. It includ
 - **Npm**: Installs npm packages required for building and validating the ADF ARM templates.
 - **Validate**: Executes a custom NPM script to validate the ARM templates and perform additional checks.
 - **Validate and Generate ARM template**: Executes a custom NPM script to generate the ARM templates and export them.
+  ```yml
+   - stage: Build_Adf_Arm_Stage
+   jobs:
+   - job: Build
+     pool:
+       name: adfcd
+       image: ubuntu
+     steps:
+     - task : NodeTool@0
+       displayName: 'Install Node.js'
+       inputs:
+         versionSpec: '14.x'
+
+     - task : Npm@1
+       displayName: 'Install npm package'
+       inputs:
+         command: 'install'
+         workingDir: '$(Build.Repository.LocalPath)/build' 
+         verbose: true
+
+     - task: Npm@1
+       displayName: 'Validate'
+       inputs:
+        command: 'custom'
+        workingDir: '$(Build.Repository.LocalPath)/build' 
+        customCommand: 'run build validate $(Build.Repository.LocalPath)/ $(adfResourceId)'
+  
+ 
+     - task: Npm@1
+       displayName: 'Validate and Generate ARM template'
+       inputs:
+         command: 'custom'
+         workingDir: '$(Build.Repository.LocalPath)/build' 
+         customCommand: 'run build export $(Build.Repository.LocalPath)/ $(adfResourceId) "armTemplate"'
+
+
+
+# Publish the artifact to be used as a source for a release pipeline.
+
+     - task: PublishPipelineArtifact@1
+       inputs:
+         targetPath: '$(Build.Repository.LocalPath)/build/armTemplate'
+         artifact: '$(adfName)-armTemplate'
+         publishLocation: 'pipeline'
+
+```
 
 ### Stage 2: Deploy_Adf_DEV_live_mode
 
