@@ -66,7 +66,7 @@ This stage deploys the ADF ARM templates to the production environment. It follo
 - **AzureResourceManagerTemplateDeployment**: Deploys the ADF ARM templates to the production environment using Azure Resource Manager.
 - overrideParameters field: This field is used to provide custom parameter values during the deployment. In the example, the parameter values being overridden are factoryName, AzureDataLakeStorage1_properties_typeProperties_url, and AzureDataLakeStorage1_accountKey.
 - **AzurePowerShell**: Executes a PowerShell script to perform post-deployment operations specific to the production environment.
-
+![Image](./images/adf-pipeline.png)
 ``` This repository serves as a sample demonstration of implementing CI/CD practices. As a result, for the sake of simplicity, storage account secrets are directly stored as variables in this repository. However, in real-life scenarios, it is recommended to securely store sensitive information like passwords and access keys in Azure Key Vault or other secure vault solutions.```
 
 ##[Click here to download the complete script](ADF/azure-pipelines.yml)
