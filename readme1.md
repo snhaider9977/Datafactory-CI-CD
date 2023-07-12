@@ -22,6 +22,14 @@ By implementing CI/CD practices, Data Factory can enhance security, maintain dat
 - Please note that in this scenario, we are considering two ADF instances. However, in real-world scenarios, a testing ADF may also be present.
 - The Dev ADF is configured with a linked service to the Dev Data Lake, while the Prod ADF is configured with a linked service to the Prod Data Lake.
 
+## Prerequisites
+
+Before using this pipeline, ensure that you have the following:
+
+- Azure subscription with appropriate access and permissions.
+- Azure DevOps account with a connected GitHub repository.
+- Azure Pipelines configured and connected to your GitHub repository.
+
 These assumptions will serve as a foundation for the tutorial, ensuring that the subsequent steps and explanations align with the specified environment.
 
 ``` It is important to note that only the Dev ADF will be integrated with Git, while the remaining ADF instances such as Prod and Test will not be GIT integrated.```
