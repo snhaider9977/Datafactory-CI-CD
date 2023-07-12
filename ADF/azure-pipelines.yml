@@ -165,7 +165,7 @@ stages:
          templateLocation: 'Linked artifact'
          csmFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json'
          csmParametersFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateParametersForFactory.json'
-         overrideParameters: '-factoryName $(adfprod) -AzureDataLakeStorage1_properties_typeProperties_url $(dev) -AzureDataLakeStorage1_accountKey $(key)'
+         overrideParameters: '-factoryName $(adfprod) -AzureDataLakeStorage1_properties_typeProperties_url $(dev) -AzureDataLakeStorage1_accountKey $(Prod-Datalake-key)'
          deploymentMode: 'Incremental'
 
      - task: AzurePowerShell@5
