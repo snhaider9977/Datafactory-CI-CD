@@ -1,0 +1,13 @@
+{
+	"name": "AzureDataLakeStorageDEV",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://datalakedev.dfs.core.windows.net/",
+			"encryptedCredential": "XXXXXXXXXXXXXXXXXXXXXXXXXX"
+		},
+		"description": "test"
+	}
+}
