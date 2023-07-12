@@ -1,0 +1,178 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and mor:
+# https://aka.ms/yaml
+
+trigger:
+- main
+variables:
+  - name: adfName
+    value: ADF-DEV
+  - name: adfprod
+    value: ADF-PROD
+  - name : dev
+    value : https://devadf.dfs.core.windows.net
+  - name : key
+    value : xxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+  - name: resourceGroupName
+    value:ADF-DEV
+  - name: resourceGroupProdName
+    value: ADF-PROD
+
+  - name: adfLocation
+    value: North Europe
+
+  - name: subscriptionId
+    value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+  - name: adfResourceId
+    value: /subscriptions/$(subscriptionId)/resourceGroups/$(resourceGroupName)/providers/Microsoft.DataFactory/factories/$(adfName)
+
+
+stages:
+
+ - stage: Build_Adf_Arm_Stage
+   jobs:
+   - job: Build
+     pool:
+       name: adfcd
+       image: ubuntu
+     steps:
+     - task : NodeTool@0
+       displayName: 'Install Node.js'
+       inputs:
+         versionSpec: '14.x'
+
+     - task : Npm@1
+       displayName: 'Install npm package'
+       inputs:
+         command: 'install'
+         workingDir: '$(Build.Repository.LocalPath)/build' 
+         verbose: true
+
+     - task: Npm@1
+       displayName: 'Validate'
+       inputs:
+        command: 'custom'
+        workingDir: '$(Build.Repository.LocalPath)/build' 
+        customCommand: 'run build validate $(Build.Repository.LocalPath)/ $(adfResourceId)'
+  
+ 
+     - task: Npm@1
+       displayName: 'Validate and Generate ARM template'
+       inputs:
+         command: 'custom'
+         workingDir: '$(Build.Repository.LocalPath)/build' 
+         customCommand: 'run build export $(Build.Repository.LocalPath)/ $(adfResourceId) "armTemplate"'
+
+
+
+# Publish the artifact to be used as a source for a release pipeline.
+
+     - task: PublishPipelineArtifact@1
+       inputs:
+         targetPath: '$(Build.Repository.LocalPath)/build/armTemplate'
+         artifact: '$(adfName)-armTemplate'
+         publishLocation: 'pipeline'
+
+#Deployment Stage
+ - stage: Deploy_Adf_Arm_Stage
+   jobs:
+   - job: Deploy_to_Live
+     pool:
+      name: adfcd
+       
+     steps:
+     - task: Bash@3
+       inputs:
+         targetType: 'inline'
+         script: |
+           sudo apt-get install -y powershell
+           pwsh -Command "Install-Module -Name Az -Force"
+     - task : DownloadPipelineArtifact@2
+       displayName: Download Build Artifacts - ADF ARM templates
+       inputs:
+         artifactName: '$(adfName)-armTemplate'
+         targetPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate'
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DLL-DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $true -deleteDeployment $false'
+         azurePowerShellVersion: 'LatestVersion'
+         pwsh: true
+
+     - task: AzureResourceManagerTemplateDeployment@3
+       inputs:
+         deploymentScope: 'Resource Group'
+         azureResourceManagerConnection: 'DLL-DEV-TEST-SP'
+         subscriptionId: '8c755fac-f585-4d1f-93c0-819c70bd3209'
+         action: 'Create Or Update Resource Group'
+         resourceGroupName: '$(resourceGroupName)'
+         location: 'North Europe'
+         templateLocation: 'Linked artifact'
+         csmFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json'
+         csmParametersFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateParametersForFactory.json'
+         deploymentMode: 'Incremental'
+
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DLL-DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $false -deleteDeployment $true'
+         azurePowerShellVersion: 'LatestVersion'
+
+#Deployment_to_production
+ - stage: Deploy_Adf_prod
+   jobs:
+   - job: Deploy_to_Prod
+     pool:
+      name: adfcd
+       
+     steps:
+     - task: Bash@3
+       inputs:
+         targetType: 'inline'
+         script: |
+           sudo apt-get install -y powershell
+           pwsh -Command "Install-Module -Name Az -Force"
+
+     - task : DownloadPipelineArtifact@2
+       displayName: Download Build Artifacts - ADF ARM templates
+       inputs:
+         artifactName: '$(adfName)-armTemplate'
+         targetPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate'
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DLL-DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupProdName) -DataFactoryName $(adfprod) -predeployment $true -deleteDeployment $false'
+         azurePowerShellVersion: 'LatestVersion'
+         pwsh: true
+
+     - task: AzureResourceManagerTemplateDeployment@3
+       inputs:
+         deploymentScope: 'Resource Group'
+         azureResourceManagerConnection: 'DLL-DEV-TEST-SP'
+         subscriptionId: '8c755fac-f585-4d1f-93c0-819c70bd3209'
+         action: 'Create Or Update Resource Group'
+         resourceGroupName: '$(resourceGroupProdName)'
+         location: 'North Europe'
+         templateLocation: 'Linked artifact'
+         csmFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json'
+         csmParametersFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateParametersForFactory.json'
+         overrideParameters: '-factoryName $(adfprod) -AzureDataLakeStorage1_properties_typeProperties_url $(dev) -AzureDataLakeStorage1_accountKey $(key)'
+         deploymentMode: 'Incremental'
+
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DLL-DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupProdName) -DataFactoryName $(adfprod) -predeployment $false -deleteDeployment $true'
+         azurePowerShellVersion: 'LatestVersion'
+
