@@ -33,5 +33,40 @@ Before using this pipeline, ensure that you have the following:
 These assumptions will serve as a foundation for the tutorial, ensuring that the subsequent steps and explanations align with the specified environment.
 
 ``` It is important to note that only the Dev ADF will be integrated with Git, while the remaining ADF instances such as Prod and Test will not be GIT integrated.```
+## Pipeline Overview
+
+The pipeline consists of the following stages:
+
+### Stage 1: Build_Adf_Stage
+
+This stage builds the ADF ARM templates and exports them as artifacts. It includes the following tasks:
+
+- **NodeTool**: Installs Node.js to execute the build process.
+- **Npm**: Installs npm packages required for building and validating the ADF ARM templates.
+- **Validate**: Executes a custom NPM script to validate the ARM templates and perform additional checks.
+- **Validate and Generate ARM template**: Executes a custom NPM script to generate the ARM templates and export them.
+
+### Stage 2: Deploy_Adf_DEV_live_mode
+
+This stage deploys the ADF ARM templates to the development environment. It includes the following tasks:
+
+- **Bash**: Installs PowerShell to execute PowerShell scripts.
+- **DownloadPipelineArtifact**: Downloads the build artifacts (ADF ARM templates) from the previous stage.
+- **AzurePowerShell**: Executes a PowerShell script to perform pre-deployment operations, such as initializing resources and executing custom logic.
+- **AzureResourceManagerTemplateDeployment**: Deploys the ADF ARM templates to the development environment using Azure Resource Manager.
+- **AzurePowerShell**: Executes a PowerShell script to perform post-deployment operations, such as cleanup or finalization tasks.
+
+### Stage 3: Deploy_Adf_prod
+
+This stage deploys the ADF ARM templates to the production environment. It follows a similar structure to the Deploy_Adf_Arm_Stage but includes additional tasks for deploying to the production environment.
+
+- **Bash**: Installs PowerShell to execute PowerShell scripts.
+- **DownloadPipelineArtifact**: Downloads the build artifacts (ADF ARM templates) from the previous stage.
+- **AzurePowerShell**: Executes a PowerShell script to perform pre-deployment operations specific to the production environment.
+- **AzureResourceManagerTemplateDeployment**: Deploys the ADF ARM templates to the production environment using Azure Resource Manager.
+- **AzurePowerShell**: Executes a PowerShell script to perform post-deployment operations specific to the production environment.
+
+
+
 
 
