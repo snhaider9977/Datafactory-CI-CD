@@ -54,6 +54,7 @@ Paste the following code into the `package.json` file:
     }
 }
 ```
+![Image](./images/adf-npm.gif)
 
 ## Pipeline Overview
 
