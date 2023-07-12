@@ -162,7 +162,7 @@ This stage deploys the ADF ARM templates to the development environment. It incl
 
      - task: AzurePowerShell@5
        inputs:
-         azureSubscription: 'DLL-DEV-TEST-SP'
+         azureSubscription: 'DEV-TEST-SP'
          ScriptType: 'FilePath'
          ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
          ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $false -deleteDeployment $true'
