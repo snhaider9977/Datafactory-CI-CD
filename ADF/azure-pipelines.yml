@@ -119,7 +119,7 @@ stages:
 
      - task: AzurePowerShell@5
        inputs:
-         azureSubscription: 'DLL-DEV-TEST-SP'
+         azureSubscription: "DEV-TEST-SP'
          ScriptType: 'FilePath'
          ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
          ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $false -deleteDeployment $true'
@@ -170,7 +170,7 @@ stages:
 
      - task: AzurePowerShell@5
        inputs:
-         azureSubscription: 'DLL-DEV-TEST-SP'
+         azureSubscription: 'DEV-TEST-SP'
          ScriptType: 'FilePath'
          ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
          ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupProdName) -DataFactoryName $(adfprod) -predeployment $false -deleteDeployment $true'
