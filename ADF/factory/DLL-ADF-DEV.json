@@ -1,9 +1,0 @@
-{
-	"name": "ADF-DEV",
-	"location": "northeurope",
-	"identity": {
-		"type": "SystemAssigned",
-		"principalId": "xxxxxxxxxxxxxxxx",
-		"tenantId": "xxxxxxxxxxxxxxxxxxxxxxx"
-	}
-}
