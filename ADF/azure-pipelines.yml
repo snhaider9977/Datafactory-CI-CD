@@ -12,7 +12,7 @@ variables:
     value: ADF-PROD
   - name : dev
     value : https://devadf.dfs.core.windows.net
-  - name : key
+  - name : Prod-Datalake-key
     value : xxxxxxxxxxxxxxxxxxxxxxxxxxx
 
   - name: resourceGroupName
