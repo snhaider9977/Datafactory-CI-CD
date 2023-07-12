@@ -97,7 +97,7 @@ stages:
          targetPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate'
      - task: AzurePowerShell@5
        inputs:
-         azureSubscription: 'DLL-DEV-TEST-SP'
+         azureSubscription: 'DEV-TEST-SP'
          ScriptType: 'FilePath'
          ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
          ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $true -deleteDeployment $false'
@@ -107,8 +107,8 @@ stages:
      - task: AzureResourceManagerTemplateDeployment@3
        inputs:
          deploymentScope: 'Resource Group'
-         azureResourceManagerConnection: 'DLL-DEV-TEST-SP'
-         subscriptionId: '8c755fac-f585-4d1f-93c0-819c70bd3209'
+         azureResourceManagerConnection: 'DEV-TEST-SP'
+         subscriptionId: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
          action: 'Create Or Update Resource Group'
          resourceGroupName: '$(resourceGroupName)'
          location: 'North Europe'
@@ -147,7 +147,7 @@ stages:
          targetPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate'
      - task: AzurePowerShell@5
        inputs:
-         azureSubscription: 'DLL-DEV-TEST-SP'
+         azureSubscription: 'DEV-TEST-SP'
          ScriptType: 'FilePath'
          ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
          ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupProdName) -DataFactoryName $(adfprod) -predeployment $true -deleteDeployment $false'
@@ -157,8 +157,8 @@ stages:
      - task: AzureResourceManagerTemplateDeployment@3
        inputs:
          deploymentScope: 'Resource Group'
-         azureResourceManagerConnection: 'DLL-DEV-TEST-SP'
-         subscriptionId: '8c755fac-f585-4d1f-93c0-819c70bd3209'
+         azureResourceManagerConnection: 'DEV-TEST-SP'
+         subscriptionId: 'xxxxxxxxxxxxxxxxxxxxxxxxx'
          action: 'Create Or Update Resource Group'
          resourceGroupName: '$(resourceGroupProdName)'
          location: 'North Europe'
