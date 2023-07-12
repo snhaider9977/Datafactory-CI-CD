@@ -69,6 +69,6 @@ This stage deploys the ADF ARM templates to the production environment. It follo
 
 ``` This repository serves as a sample demonstration of implementing CI/CD practices. As a result, for the sake of simplicity, storage account secrets are directly stored as variables in this repository. However, in real-life scenarios, it is recommended to securely store sensitive information like passwords and access keys in Azure Key Vault or other secure vault solutions.```
 
-##[Click here to download the complete script](Datafactory-CI-CD/ADF/factory/azure-pipelines.yml)
+##[Click here to download the complete script](ADF/factory/azure-pipelines.yml)
 
 For any further assistance or inquiries, please feel free to reach out at snhaider9977@gmail.com
