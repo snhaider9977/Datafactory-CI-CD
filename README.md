@@ -103,17 +103,12 @@ This stage builds the ADF ARM templates and exports them as artifacts. It includ
          workingDir: '$(Build.Repository.LocalPath)/build' 
          customCommand: 'run build export $(Build.Repository.LocalPath)/ $(adfResourceId) "armTemplate"'
 
-
-
-# Publish the artifact to be used as a source for a release pipeline.
-
      - task: PublishPipelineArtifact@1
        inputs:
          targetPath: '$(Build.Repository.LocalPath)/build/armTemplate'
          artifact: '$(adfName)-armTemplate'
          publishLocation: 'pipeline'
 
-```
 
 ### Stage 2: Deploy_Adf_DEV_live_mode
 
@@ -124,7 +119,55 @@ This stage deploys the ADF ARM templates to the development environment. It incl
 - **AzurePowerShell**: Executes a PowerShell script to perform pre-deployment operations, such as initializing resources and executing custom logic.
 - **AzureResourceManagerTemplateDeployment**: Deploys the ADF ARM templates to the development environment using Azure Resource Manager.
 - **AzurePowerShell**: Executes a PowerShell script to perform post-deployment operations, such as cleanup or finalization tasks.
+``` yml
+ - stage: Deploy_Adf_Arm_Stage
+   jobs:
+   - job: Deploy_to_Live
+     pool:
+      name: adfcd
+       
+     steps:
+     - task: Bash@3
+       inputs:
+         targetType: 'inline'
+         script: |
+           sudo apt-get install -y powershell
+           pwsh -Command "Install-Module -Name Az -Force"
+     - task : DownloadPipelineArtifact@2
+       displayName: Download Build Artifacts - ADF ARM templates
+       inputs:
+         artifactName: '$(adfName)-armTemplate'
+         targetPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate'
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $true -deleteDeployment $false'
+         azurePowerShellVersion: 'LatestVersion'
+         pwsh: true
 
+     - task: AzureResourceManagerTemplateDeployment@3
+       inputs:
+         deploymentScope: 'Resource Group'
+         azureResourceManagerConnection: 'DEV-TEST-SP'
+         subscriptionId: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+         action: 'Create Or Update Resource Group'
+         resourceGroupName: '$(resourceGroupName)'
+         location: 'North Europe'
+         templateLocation: 'Linked artifact'
+         csmFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json'
+         csmParametersFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateParametersForFactory.json'
+         deploymentMode: 'Incremental'
+
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DLL-DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupName) -DataFactoryName $(adfName) -predeployment $false -deleteDeployment $true'
+         azurePowerShellVersion: 'LatestVersion'
+```
 ### Stage 3: Deploy_Adf_prod
 
 This stage deploys the ADF ARM templates to the production environment. It follows a similar structure to the Deploy_Adf_Arm_Stage but includes additional tasks for deploying to the production environment.
