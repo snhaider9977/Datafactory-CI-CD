@@ -71,7 +71,7 @@ variables:
     value:  ADF-PROD
   - name : PROD-SA
     value : https://prod.dfs.core.windows.net
-  - name : key
+  - name : Prod-Datalake-key
     value : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
   - name: resourceGroupName
