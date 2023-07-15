@@ -10,7 +10,7 @@ variables:
     value: ADF-DEV
   - name: adfprod
     value: ADF-PROD
-  - name : dev
+  - name : PRD-SA
     value : https://devadf.dfs.core.windows.net
   - name : Prod-Datalake-key
     value : xxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -165,7 +165,7 @@ stages:
          templateLocation: 'Linked artifact'
          csmFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json'
          csmParametersFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateParametersForFactory.json'
-         overrideParameters: '-factoryName $(adfprod) -AzureDataLakeStorage1_properties_typeProperties_url $(dev) -AzureDataLakeStorage1_accountKey $(Prod-Datalake-key)'
+         overrideParameters: '-factoryName $(adfprod) -AzureDataLakeStorage1_properties_typeProperties_url $(PROD-SA) -AzureDataLakeStorage1_accountKey $(Prod-Datalake-key)'
          deploymentMode: 'Incremental'
 
      - task: AzurePowerShell@5
