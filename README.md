@@ -58,7 +58,7 @@ Paste the following code into the `package.json` file:
 
 
 ## Create Pipeline
-![Image](./images/PIPELINE.gif)
+![Image](./final.gif)
 
 ##Defining the Variables:
   ```yml
