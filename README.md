@@ -218,6 +218,59 @@ This stage deploys the ADF ARM templates to the production environment. It follo
  
 - **AzurePowerShell**: Executes a PowerShell script to perform post-deployment operations specific to the production environment.
 ![Image](./images/adf-pipeline.png)
+```yaml
+#Deployment_to_production
+ - stage: Deploy_Adf_prod
+   jobs:
+   - job: Deploy_to_Prod
+     pool:
+      name: adfcd
+       
+     steps:
+     - task: Bash@3
+       inputs:
+         targetType: 'inline'
+         script: |
+           sudo apt-get install -y powershell
+           pwsh -Command "Install-Module -Name Az -Force"
+
+     - task : DownloadPipelineArtifact@2
+       displayName: Download Build Artifacts - ADF ARM templates
+       inputs:
+         artifactName: '$(adfName)-armTemplate'
+         targetPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate'
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupProdName) -DataFactoryName $(adfprod) -predeployment $true -deleteDeployment $false'
+         azurePowerShellVersion: 'LatestVersion'
+         pwsh: true
+
+     - task: AzureResourceManagerTemplateDeployment@3
+       inputs:
+         deploymentScope: 'Resource Group'
+         azureResourceManagerConnection: 'DEV-TEST-SP'
+         subscriptionId: 'xxxxxxxxxxxxxxxxxxxxxxxxx'
+         action: 'Create Or Update Resource Group'
+         resourceGroupName: '$(resourceGroupProdName)'
+         location: 'North Europe'
+         templateLocation: 'Linked artifact'
+         csmFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json'
+         csmParametersFile: '$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateParametersForFactory.json'
+         overrideParameters: '-factoryName $(adfprod) -AzureDataLakeStorage1_properties_typeProperties_url $(PROD-SA) -AzureDataLakeStorage1_accountKey $(Prod-Datalake-key)'
+         deploymentMode: 'Incremental'
+
+     - task: AzurePowerShell@5
+       inputs:
+         azureSubscription: 'DEV-TEST-SP'
+         ScriptType: 'FilePath'
+         ScriptPath: '$(Pipeline.Workspace)/$(adfName)-armTemplate/PrePostDeploymentScript.ps1'
+         ScriptArguments: '-armTemplate "$(Pipeline.Workspace)/$(adfName)-armTemplate/ARMTemplateForFactory.json" -ResourceGroupName $(resourceGroupProdName) -DataFactoryName $(adfprod) -predeployment $false -deleteDeployment $true'
+         azurePowerShellVersion: 'LatestVersion'
+```
+
 ``` This repository serves as a sample demonstration of implementing CI/CD practices. As a result, for the sake of simplicity, storage account secrets are directly stored as variables in this repository. However, in real-life scenarios, it is recommended to securely store sensitive information like passwords and access keys in Azure Key Vault or other secure vault solutions.```
 
 ##[Click here to download the complete script](ADF/azure-pipelines.yml)
