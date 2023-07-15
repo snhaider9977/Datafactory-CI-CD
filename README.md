@@ -60,7 +60,35 @@ Paste the following code into the `package.json` file:
 ## Create Pipeline
 ![Image](./images/PIPELINE.gif)
 
+##Defining the Variables:
+  ```yml
+trigger:
+- main
+variables:
+  - name: adfName
+    value: ADF-DEV
+  - name: adfprod
+    value:  ADF-PROD
+  - name : PROD-SA
+    value : https://prod.dfs.core.windows.net
+  - name : key
+    value : xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+  - name: resourceGroupName
+    value: ADF-DEV
+  - name: resourceGroupProdName
+    value: ADF-PROD
+
+  - name: adfLocation
+    value: North Europe
+
+  - name: subscriptionId
+    value: 8c755fac-f585-4d1f-93c0-819c70bd3209
+
+  - name: adfResourceId
+    value: /subscriptions/$(subscriptionId)/resourceGroups/$(resourceGroupName)/providers/Microsoft.DataFactory/factories/$(adfName)
+```
+    
 ## Pipeline Overview
 The pipeline consists of the following stages:
 ### Stage 1: Build_Adf_Stage
