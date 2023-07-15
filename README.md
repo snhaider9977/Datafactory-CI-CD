@@ -83,7 +83,7 @@ variables:
     value: North Europe
 
   - name: subscriptionId
-    value: 8c755fac-f585-4d1f-93c0-819c70bd3209
+    value: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
   - name: adfResourceId
     value: /subscriptions/$(subscriptionId)/resourceGroups/$(resourceGroupName)/providers/Microsoft.DataFactory/factories/$(adfName)
