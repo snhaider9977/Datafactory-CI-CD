@@ -56,10 +56,12 @@ Paste the following code into the `package.json` file:
 ```
 ![Image](./images/adf-npm.gif)
 
-## Pipeline Overview
+
+## Create Pipeline
 ![Image](./images/PIPELINE.gif)
 The pipeline consists of the following stages:
 
+## Pipeline Overview
 ### Stage 1: Build_Adf_Stage
 
 This stage builds the ADF ARM templates and exports them as artifacts. It includes the following tasks:
