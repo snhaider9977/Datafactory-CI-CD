@@ -57,7 +57,7 @@ Paste the following code into the `package.json` file:
 ![Image](./images/adf-npm.gif)
 
 ## Pipeline Overview
-
+![Image](./images/PIPELINE.gif)
 The pipeline consists of the following stages:
 
 ### Stage 1: Build_Adf_Stage
